@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#e8622a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sosneado">
+<link rel="manifest" href="./manifest.json">
+<title>Escalada en Sosneado</title>
+<style>
+  :root {
+    --bg: #0f0f1a;
+    --bg2: #1a1a2e;
+    --bg3: #16213e;
+    --accent: #e8622a;
+    --accent2: #f0a500;
+    --text: #e8e8f0;
+    --text2: #a0a0b8;
+    --border: #2a2a4a;
+    --grade-easy: #4caf50;
+    --grade-mid: #ff9800;
+    --grade-hard: #f44336;
+    --card: #1e1e35;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { font-size: 16px; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  /* Header */
+  .header {
+    background: var(--bg2);
+    border-bottom: 2px solid var(--accent);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 4px 8px 4px 0;
+    display: none;
+    line-height: 1;
+  }
+  .back-btn.visible { display: block; }
+  .header-title { font-size: 1.1rem; font-weight: 700; color: var(--text); flex: 1; }
+  .header-sub { font-size: 0.75rem; color: var(--text2); }
+
+  /* Pages */
+  .page { display: none; max-width: 600px; margin: 0 auto; padding: 0 0 80px 0; }
+  .page.active { display: block; }
+
+  /* Home */
+  .hero {
+    background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+    padding: 24px 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 { font-size: 1.6rem; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+  .hero p { font-size: 0.85rem; color: var(--text2); line-height: 1.5; }
+  .hero-stats {
+    display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;
+  }
+  .stat {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-align: center;
+    flex: 1; min-width: 70px;
+  }
+  .stat-n { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+  .stat-l { font-size: 0.7rem; color: var(--text2); margin-top: 2px; }
+
+  /* Section label */
+  .section-label {
+    padding: 12px 16px 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Aguja card */
+  .aguja-card {
+    margin: 0 12px 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    -webkit-user-select: none; user-select: none;
+  }
+  .aguja-card:active { background: #252540; border-color: var(--accent); }
+  .aguja-card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .aguja-name { font-size: 1rem; font-weight: 700; color: var(--text); }
+  .aguja-routes-count {
+    background: var(--accent);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+  .aguja-meta { margin-top: 6px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .aguja-chip {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .chip-approach { border-color: #3a5a8a; color: #7ab0e8; }
+  .chip-grade { font-weight: 700; }
+  .grade-easy { border-color: var(--grade-easy); color: var(--grade-easy); }
+  .grade-mid { border-color: var(--grade-mid); color: var(--grade-mid); }
+  .grade-hard { border-color: var(--grade-hard); color: var(--grade-hard); }
+  .aguja-card-arrow { font-size: 0.9rem; color: var(--text2); margin-top: 2px; }
+
+  /* Ubicacion card */
+  .info-card {
+    margin: 0 12px 8px;
+    background: var(--card);
+    border: 1px solid #2a4a3a;
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .info-card:active { border-color: var(--accent2); }
+  .info-card-header { display: flex; justify-content: space-between; align-items: center; }
+  .info-card-title { font-size: 1rem; font-weight: 700; color: var(--accent2); }
+
+  /* Detail page */
+  .detail-hero {
+    background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+    padding: 20px 16px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-name { font-size: 1.5rem; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+  .detail-desc { font-size: 0.85rem; color: var(--text2); line-height: 1.5; margin-bottom: 12px; }
+  .detail-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .detail-chip {
+    font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); color: var(--text2);
+  }
+
+  /* Route card */
+  .route-card {
+    margin: 0 12px 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .route-header {
+    padding: 14px 16px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    -webkit-user-select: none; user-select: none;
+  }
+  .route-header:active { background: #252540; }
+  .route-header-info { flex: 1; }
+  .route-name { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .route-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .badge {
+    font-size: 0.72rem; font-weight: 700; padding: 3px 9px;
+    border-radius: 20px; border: 1px solid;
+  }
+  .badge-grade { border-color: currentColor; }
+  .badge-length { border-color: #4a4a7a; color: var(--text2); }
+  .badge-stars { border-color: #6a5a00; color: var(--accent2); }
+  .badge-fa { border-color: #3a5a3a; color: #7aba7a; font-weight: 400; font-size: 0.68rem; }
+  .route-toggle {
+    font-size: 1.1rem; color: var(--text2); transition: transform 0.2s;
+    flex-shrink: 0; padding-top: 2px;
+  }
+  .route-toggle.open { transform: rotate(180deg); }
+
+  .route-body {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--border);
+  }
+  .route-body.open { display: block; }
+
+  /* Pitches */
+  .pitches-title {
+    font-size: 0.72rem; font-weight: 700; color: var(--text2); text-transform: uppercase;
+    letter-spacing: 0.8px; margin: 14px 0 8px;
+  }
+  .pitch-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 7px 0; border-bottom: 1px solid #1e1e35;
+  }
+  .pitch-row:last-child { border-bottom: none; }
+  .pitch-num {
+    background: var(--bg3); color: var(--text2); font-size: 0.7rem; font-weight: 700;
+    width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+  .pitch-info { flex: 1; }
+  .pitch-grade-len { display: flex; gap: 8px; align-items: center; margin-bottom: 2px; }
+  .pitch-grade { font-weight: 700; font-size: 0.85rem; }
+  .pitch-len { font-size: 0.78rem; color: var(--text2); }
+  .pitch-note { font-size: 0.78rem; color: var(--text2); line-height: 1.4; }
+
+  /* Info sections */
+  .info-section { margin-top: 14px; }
+  .info-row {
+    display: flex; gap: 10px; padding: 8px 0;
+    border-bottom: 1px solid #1e1e35; align-items: flex-start;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-icon { font-size: 1rem; flex-shrink: 0; width: 22px; }
+  .info-label { font-size: 0.72rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .info-value { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
+
+  /* Ubicacion page */
+  .ubic-section {
+    margin: 0 12px 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .ubic-section h3 { font-size: 0.9rem; font-weight: 700; color: var(--accent2); margin-bottom: 12px; }
+  .ubic-row {
+    display: flex; gap: 10px; padding: 8px 0;
+    border-bottom: 1px solid #1e1e35; align-items: flex-start;
+  }
+  .ubic-row:last-child { border-bottom: none; }
+  .ubic-icon { font-size: 1.1rem; flex-shrink: 0; }
+  .ubic-label { font-size: 0.72rem; color: var(--text2); margin-bottom: 2px; }
+  .ubic-value { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
+  .coord-box {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 12px; font-family: monospace; font-size: 0.78rem; color: var(--accent2);
+    margin-top: 6px; word-break: break-all;
+  }
+  .contact-link { color: var(--accent); text-decoration: none; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg2); border-top: 1px solid var(--border);
+    display: flex; z-index: 99;
+  }
+  .nav-btn {
+    flex: 1; background: none; border: none; color: var(--text2);
+    padding: 10px 0 12px; cursor: pointer; display: flex; flex-direction: column;
+    align-items: center; gap: 3px; font-size: 0.65rem; transition: color 0.15s;
+    -webkit-user-select: none; user-select: none;
+  }
+  .nav-btn .nav-icon { font-size: 1.3rem; }
+  .nav-btn.active { color: var(--accent); }
+  .nav-btn:active { color: var(--accent); }
+
+  /* Search */
+  .search-bar {
+    padding: 12px 12px 6px;
+    position: sticky; top: 60px; background: var(--bg); z-index: 50;
+  }
+  .search-input {
+    width: 100%; background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 0.9rem;
+    outline: none;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text2); }
+
+  /* Stars display */
+  .stars { color: var(--accent2); font-size: 0.8rem; }
+
+  /* Offline indicator */
+  .offline-badge {
+    background: #2a4a2a; color: #7aba7a; font-size: 0.65rem; padding: 2px 8px;
+    border-radius: 20px; border: 1px solid #3a6a3a;
+  }
+
+  /* Scrollable */
+  .scroll-x { overflow-x: auto; }
+
+  /* Grade colors */
+  .g-4, .g-5 { color: var(--grade-easy); border-color: var(--grade-easy); }
+  .g-6a, .g-6b { color: var(--grade-mid); border-color: var(--grade-mid); }
+  .g-6c, .g-7 { color: var(--grade-hard); border-color: var(--grade-hard); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <button class="back-btn" id="backBtn" onclick="goBack()">←</button>
+    <div>
+      <div class="header-title" id="headerTitle">Escalada en Sosneado</div>
+      <div class="header-sub" id="headerSub">Valle de Sosneado · Mendoza</div>
+    </div>
+    <span class="offline-badge">OFFLINE</span>
+  </div>
+</div>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <h1>Valle de Sosneado</h1>
+    <p>Malargüe, Mendoza · Sur del Andes · Granito de alta calidad</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-n">26</div><div class="stat-l">Agujas</div></div>
+      <div class="stat"><div class="stat-n">70+</div><div class="stat-l">Vías</div></div>
+      <div class="stat"><div class="stat-n">500m</div><div class="stat-l">Máx largo</div></div>
+      <div class="stat"><div class="stat-n">4+–7b+</div><div class="stat-l">Grados</div></div>
+    </div>
+  </div>
+  <div class="search-bar">
+    <input class="search-input" type="search" placeholder="Buscar aguja o vía..." id="searchInput" oninput="filterAgujas(this.value)">
+  </div>
+  <div class="section-label">Información General</div>
+  <div class="info-card" onclick="showPage('ubicacion')">
+    <div class="info-card-header">
+      <div class="info-card-title">📍 Ubicación y Acceso</div>
+      <span style="color:var(--text2)">→</span>
+    </div>
+    <div style="font-size:0.8rem;color:var(--text2);margin-top:6px">Cómo llegar · Campamentos · Contactos</div>
+  </div>
+  <div class="section-label">Agujas</div>
+  <div id="agujasList"></div>
+</div>
+
+<!-- UBICACION PAGE -->
+<div class="page" id="page-ubicacion">
+  <div class="ubic-section" style="margin-top:12px">
+    <h3>📍 Ubicación</h3>
+    <div class="ubic-row">
+      <span class="ubic-icon">🗺️</span>
+      <div>
+        <div class="ubic-label">Departamento</div>
+        <div class="ubic-value">Sur de Mendoza · Localidad de Malargüe</div>
+      </div>
+    </div>
+    <div class="ubic-row">
+      <span class="ubic-icon">🚗</span>
+      <div>
+        <div class="ubic-label">Distancias</div>
+        <div class="ubic-value">~100 km de Malargüe · ~210 km de San Rafael · ~430 km de Mendoza</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ubic-section">
+    <h3>🛣️ Acceso por Ruta</h3>
+    <div class="ubic-row">
+      <span class="ubic-icon">🔄</span>
+      <div>
+        <div class="ubic-label">Ruta</div>
+        <div class="ubic-value">Rutas Nacionales 146 y 40 hasta el pueblo de Sosneado. Luego camino de ripio hasta la laguna termal, ruinas del hotel abandonado y antigua mina de azufre.</div>
+      </div>
+    </div>
+    <div class="ubic-row">
+      <span class="ubic-icon">🐎</span>
+      <div>
+        <div class="ubic-label">Cruce del Río Atuel</div>
+        <div class="ubic-value">A 53 km del pueblo, puesto de arriero (Sr. Dante y Marcelino) sobre la mano izquierda del camino. Cruce disponible diciembre a mayo con caballos. Fuera de ese periodo, vado independiente.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ubic-section">
+    <h3>⛺ Campamentos</h3>
+    <div class="ubic-row">
+      <span class="ubic-icon">🏕️</span>
+      <div>
+        <div class="ubic-label">Campamento Base</div>
+        <div class="ubic-value">500 m al norte del cruce del río</div>
+        <div class="coord-box">-34.81740532297685, -70.00786596466965</div>
+      </div>
+    </div>
+    <div class="ubic-row">
+      <span class="ubic-icon">💧</span>
+      <div>
+        <div class="ubic-label">Fuente de Agua</div>
+        <div class="coord-box">-34.82197390200938, -70.00566898673937</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ubic-section">
+    <h3>🚌 Transporte</h3>
+    <div class="ubic-row">
+      <span class="ubic-icon">🚌</span>
+      <div>
+        <div class="ubic-label">Bus</div>
+        <div class="ubic-value">Empresa Iselin · San Rafael → Sosneado (diario)</div>
+      </div>
+    </div>
+    <div class="ubic-row">
+      <span class="ubic-icon">🚙</span>
+      <div>
+        <div class="ubic-label">4x4 El Chacallal</div>
+        <div class="ubic-value">Miguel Merlo</div>
+        <div class="ubic-value" style="font-size:1rem;margin-top:4px"><a href="tel:+5402601546103000" class="contact-link">0260-15-4610300</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ubic-section">
+    <h3>📞 Contacto</h3>
+    <div class="ubic-row">
+      <span class="ubic-icon">✉️</span>
+      <div>
+        <div class="ubic-label">Lucas Alzamora (aperturista principal)</div>
+        <div class="ubic-value"><a href="mailto:lucasalzamora@yahoo.com" class="contact-link">lucasalzamora@yahoo.com</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ubic-section">
+    <h3>📅 Temporada</h3>
+    <div class="ubic-row">
+      <span class="ubic-icon">🌞</span>
+      <div>
+        <div class="ubic-label">Mejor época</div>
+        <div class="ubic-value">Diciembre a Mayo (cruce del río operativo con arriero)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AGUJA DETAIL PAGE -->
+<div class="page" id="page-aguja">
+  <div id="agujaDetail"></div>
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-home" onclick="showPage('home')">
+    <span class="nav-icon">🏠</span>Inicio
+  </button>
+  <button class="nav-btn" id="nav-ubicacion" onclick="showPage('ubicacion')">
+    <span class="nav-icon">📍</span>Acceso
+  </button>
+</div>
+
+<script>
+// ---- DATA ----
+const AGUJAS = [
+  {
+    id: 'principal',
+    name: 'Aguja Principal',
+    desc: 'Cara Este. Primera vía de escalada del valle (2006). Las vías más largas y emblemáticas de Sosneado.',
+    approach: '~1h 30min',
+    grades: ['6a+', '6b+', '6c', '7b+'],
+    maxGrade: '7b+',
+    routes: [
+      {
+        name: 'Cuestión de tiempo',
+        grade: '6a+', length: '500m', stars: 4,
+        fa: 'Lucas Alzamora, Ale "Burbu" Sabatini (2006)',
+        note: 'Primera vía de escalada del valle. Clásica con escalada sostenida en 6a.',
+        pitches: [
+          { n:1, len:'40m', grade:'5+', note:'2 spits' },
+          { n:2, len:'40m', grade:'5+/6a', note:'2 spits' },
+          { n:3, len:'45m', grade:'6a', note:'1 spit, 1 nuez' },
+          { n:4, len:'50m', grade:'6a', note:'Sin spits — reunión a mitad recomendada' },
+          { n:5, len:'50m', grade:'6a', note:'1 spit, 1 stopper' },
+          { n:6, len:'50m', grade:'5+', note:'1 spit, 1 stopper' },
+          { n:7, len:'50m', grade:'6a+', note:'2 spits' },
+          { n:8, len:'40m', grade:'6a', note:'Bloque natural con cintas' },
+          { n:'', len:'~150m', grade:'3-4°', note:'Marcha hasta la cumbre' },
+        ],
+        equipment: '2 cuerdas ×50m, juego completo de friends, pitones pequeños, cintas largas',
+        descent: 'Por la misma vía o "Nalgas de Loncho" si se llevan 2 cuerdas ×60m',
+      },
+      {
+        name: 'Persiguiendo estrellas fugaces',
+        grade: '6a', length: '420m', stars: 4,
+        fa: 'Lucas Alzamora, Tobias Reyes, Maxi Astete Millan (Nov 2007)',
+        pitches: [
+          { n:1, len:'40m', grade:'6a', note:'2 spits' },
+          { n:2, len:'45m', grade:'6a+', note:'2 spits' },
+          { n:3, len:'50m', grade:'5+/6a', note:'2 spits' },
+          { n:4, len:'60m', grade:'5°', note:'2 spits' },
+          { n:5, len:'40m', grade:'6a+', note:'2 spits' },
+          { n:6, len:'45m', grade:'6a', note:'2 spits' },
+          { n:7, len:'45m', grade:'5+', note:'2 spits' },
+          { n:8, len:'50m', grade:'6a!!', note:'2 spits' },
+          { n:9, len:'40m', grade:'6a', note:'Bloque natural con cintas' },
+        ],
+        equipment: '2 cuerdas ×60m, 1 juego completo de friends, stoppers, cintas largas',
+        descent: 'Por "Nalgas de Loncho al escabeche"',
+      },
+      {
+        name: 'Nalgas de Loncho al escabeche',
+        grade: '7b+', length: '450m', stars: 5,
+        fa: 'Lucas Alzamora, Carloncho Guerra, Esteban "Morsa" Degregori, Paula "Rubita" Alegre (Abr 2009)',
+        pitches: [
+          { n:1, len:'45m', grade:'6b', note:'2 spits' },
+          { n:2, len:'55m', grade:'7b+', note:'2 spits — CRUX' },
+          { n:3, len:'55m', grade:'6c', note:'2 spits' },
+          { n:4, len:'45m', grade:'6b+', note:'2 spits' },
+          { n:5, len:'40m', grade:'6c+', note:'1 spit, 1 stopper' },
+          { n:6, len:'45m', grade:'6c', note:'2 spits' },
+          { n:7, len:'35m', grade:'6b', note:'2 spits' },
+          { n:8, len:'60m', grade:'6b+', note:'2 spits' },
+          { n:9, len:'40m', grade:'6a', note:'Bloque natural con cintas' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos friends, friend #4, pitones aliens #0.2–#0.5, cintas largas, 3 exprés',
+        descent: 'Por la misma vía',
+      },
+      {
+        name: 'Luna / La vía del Willy',
+        grade: '6c', length: '110m', stars: 4,
+        fa: 'Willy Ubeli, Guillote (Abr 2010); completada por Carloncho Guerra, Peta Ramirez (Mar 2011)',
+        pitches: [
+          { n:1, len:'50m', grade:'5+' },
+          { n:2, len:'30m', grade:'6b' },
+          { n:3, len:'30m', grade:'6c', note:'CRUX — fisura delgada, atlética' },
+        ],
+        equipment: '2 cuerdas ×50m, juego completo de friends con pequeños repetidos, stoppers, cintas largas',
+        descent: 'Por "Cuestión de tiempo" o "Nalgas de Loncho" si se va a cumbre con ×60m',
+        note: 'Sirve como variante para alcanzar la repisa intermedia de "Cuestión de tiempo"',
+      },
+      {
+        name: 'Gran Diedro',
+        grade: '6c', length: '320m', stars: 4,
+        fa: 'Lucas Alzamora, Diego Nakamura (3 May 2012)',
+        pitches: [
+          { n:1, len:'60m', grade:'6a', note:'2 spits' },
+          { n:2, len:'45m', grade:'6a+', note:'2 spits' },
+          { n:3, len:'50m', grade:'6b', note:'CRUX — requiere friend #4/#5' },
+          { n:4, len:'50m', grade:'5', note:'2 spits' },
+        ],
+        equipment: '2 cuerdas ×60m, 1 juego completo de friends (#4/#5), pitones pequeños, cintas largas',
+        descent: 'Rapelar la vía o continuar por "Persiguiendo..." para el descenso',
+      },
+      {
+        name: 'Los Fugitivos',
+        grade: '6b+', length: '245m', stars: 3,
+        fa: 'Damián Zanotti, Milton Vasquez (L1); Lucas Alzamora, Esteban "Morsa" Degregori, Maxi Astete Millan (L2-3, Nov 2010)',
+        pitches: [
+          { n:1, len:'50m', grade:'6a', note:'2 spits' },
+          { n:2, len:'40m', grade:'6a+', note:'2 spits' },
+          { n:3, len:'55m', grade:'6b', note:'2 spits' },
+          { n:4, len:'60m', grade:'5°', note:'2 spits' },
+          { n:5, len:'50m', grade:'6b+', note:'CRUX — friends #4-5' },
+          { n:6, len:'50m', grade:'5', note:'2 spits' },
+        ],
+        equipment: '2 cuerdas ×60m, 1 juego completo de friends + #4-5, pitones pequeños, cintas largas',
+        descent: 'Rapelar; continúa con rappeles de "Persiguiendo..." si se llega a cumbre',
+      },
+      {
+        name: 'Uxmal (variante)',
+        grade: '6b+', length: '100m', stars: 3,
+        fa: 'Lucas Alzamora, Diego Nakamura (Mar 2014)',
+        pitches: [
+          { n:1, len:'45m', grade:'6b+', note:'Sin spits — exposición, requiere fuerza' },
+          { n:2, len:'25m', grade:'6b', note:'Plaqueta delicada — reunión intermedia recomendada' },
+          { n:3, len:'50m', grade:'6a', note:'Empalma con "Persiguiendo..." parte alta' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos completos de friends, pitones pequeños repetidos, cintas largas',
+        descent: 'Llegar a R3 de "Persiguiendo..." o travesear a "Los Fugitivos"',
+      },
+    ]
+  },
+  {
+    id: 'ectelion',
+    name: 'Aguja Ectelion',
+    desc: 'La cumbre más alta del macizo. Exposición sur.',
+    approach: '~2h',
+    grades: ['6b', '6c', '7a+'],
+    maxGrade: '7a+',
+    routes: [
+      {
+        name: 'El Malambo del Grone',
+        grade: '6c', length: '450m', stars: 4,
+        fa: 'Lucas Alzamora, Diego Nakamura (Abr 2019)',
+        pitches: [
+          { n:1, len:'60m', grade:'6a/+' },
+          { n:2, len:'60m', grade:'6a/+', note:'2 spits' },
+          { n:3, len:'40m', grade:'6a+', note:'2 spits' },
+          { n:4, len:'40m', grade:'6b', note:'2 spits' },
+          { n:5, len:'50m', grade:'6c', note:'2 spits' },
+          { n:6, len:'50m', grade:'6b/+', note:'2 spits' },
+          { n:7, len:'55m', grade:'6b+/c', note:'2 spits' },
+          { n:8, len:'40m', grade:'6b', note:'2 spits' },
+          { n:9, len:'55m', grade:'6a+/b', note:'2 spits' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos completos de friends, aliens #0.3-0.4 duplicados, cintas largas',
+        descent: 'Secuencia de rappeles complejos desde la cumbre del pilar oeste',
+      },
+      {
+        name: 'Jumanji',
+        grade: '6c', length: '500m', stars: 3,
+        fa: 'Esteban Degregori, Juancho Torres, Charly Contartese (2015)',
+        pitches: [
+          { n:1, grade:'6a+' },
+          { n:2, grade:'6a+' },
+          { n:3, grade:'6b' },
+          { n:4, grade:'6b+' },
+          { n:5, grade:'6c' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos completos de friends, cintas largas',
+        descent: 'Marchar al oeste hasta el cañón o usar rappeles de "El Malambo"',
+      },
+      {
+        name: 'Chaparral',
+        grade: '6b', length: '475m', stars: 3,
+        fa: 'Lucas Alzamora, Diego Nakamura (Mar 2014)',
+        note: 'Algunos bloques sueltos en zona intermedia.',
+        pitches: [
+          { n:1, len:'55m', grade:'6b' },
+          { n:2, len:'60m', grade:'6a' },
+          { n:3, len:'60m', grade:'4+' },
+          { n:4, len:'55m', grade:'5+' },
+          { n:5, len:'60m', grade:'5°' },
+          { n:6, len:'40m', grade:'6a++' },
+          { n:7, len:'45m', grade:'6a+' },
+          { n:8, len:'50m', grade:'6a' },
+          { n:9, len:'50m', grade:'6a' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos completos de friends, cintas largas',
+        descent: 'Marchar 100m al oeste hasta cañón o rapelar por "El Malambo"',
+      },
+      {
+        name: 'Comilón de Largos',
+        grade: '7a+/A0', length: '370m', stars: 3,
+        fa: 'Loro Sanguinetti, Marcos Martínez de Oz, Silvio Monesterolo (1 Dic 2017)',
+        note: 'Excelente granito en los largos 6 y 7. Acceso por la ladera de escombros oeste bajo el pilar.',
+        pitches: [
+          { n:1, len:'45m', grade:'6a', note:'2 spits' },
+          { n:2, len:'40m', grade:'6b', note:'1 spit + stopper' },
+          { n:3, len:'50m', grade:'5!', note:'Material móvil' },
+          { n:4, len:'30m', grade:'3/4' },
+          { n:5, len:'30m', grade:'6a+', note:'2 spits' },
+          { n:6, len:'30m', grade:'7a+/A0', note:'2 spits' },
+          { n:7, len:'50m', grade:'6c', note:'2 spits' },
+          { n:8, len:'50m', grade:'6a', note:'Reunión natural' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos completos de friends, aliens, stoppers, cintas, cordino para abandono',
+        descent: 'Rapelar cara oeste desde cumbre',
+      },
+    ]
+  },
+  {
+    id: 'misil',
+    name: 'Aguja El Misil',
+    desc: 'Aguja emblemática con cabeza cónica. Visible desde el campamento. Rutas en cara norte, oeste y sur.',
+    approach: '~2h',
+    grades: ['6a', '6b', '6c', '7b+'],
+    maxGrade: '7b+',
+    routes: [
+      {
+        name: 'La manteca no es para los gatos',
+        grade: '6b+', length: '270m', stars: 5,
+        fa: 'Lucas Alzamora, Diego Nakamura, Maxi Astete Millan, David Salazar (Dic 2008)',
+        note: 'Cara Norte. Roca de excelente calidad.',
+        pitches: [
+          { n:1, len:'50m', grade:'5+', note:'2 spits' },
+          { n:2, len:'50m', grade:'6b+' },
+          { n:3, len:'45m', grade:'6a', note:'2 spits' },
+          { n:4, len:'40m', grade:'6b', note:'2 spits' },
+          { n:5, len:'40m', grade:'6b+', note:'2 spits' },
+          { n:6, len:'40m', grade:'6a+/b', note:'2 spits' },
+        ],
+        equipment: 'Juego completo de friends con repetidos #1-3, #5 imprescindible, cintas largas, 2 cuerdas ×50m',
+        descent: '3 rappeles por la línea de ascenso, luego canaleta, 4° rappel hasta la R1',
+      },
+      {
+        name: 'Eimen broo!!! (variante)',
+        grade: '6a', length: '100m', stars: 3,
+        fa: 'Lucas Alzamora, Diego Nakamura (Dic 2008)',
+        note: 'Cara Norte — variante.',
+        pitches: [
+          { n:1, len:'50m', grade:'6a' },
+          { n:2, len:'50m', grade:'6a', note:'2 spits' },
+        ],
+        equipment: 'Igual que "La manteca"',
+        descent: 'Por "La manteca no es para los gatos"',
+      },
+      {
+        name: 'Directo a la cabeza (variante)',
+        grade: '6b', length: '60m', stars: 3,
+        fa: 'Lucas Alzamora, Carloncho (4 Sep 2011)',
+        note: 'Cara Norte — variante directa a la cabeza del Misil.',
+        pitches: [
+          { n:1, len:'60m', grade:'6b', note:'2 spits' },
+        ],
+        equipment: 'Igual que "La manteca"',
+        descent: 'Por "La manteca no es para los gatos"',
+      },
+      {
+        name: 'Variante Loro',
+        grade: '6b', length: '60m', stars: 3,
+        fa: 'Martin Sanguinetti',
+        note: 'Cara Norte — línea directa a la cabeza del Misil por fisura perfecta.',
+        pitches: [
+          { n:1, len:'60m', grade:'6b' },
+        ],
+        descent: 'Por "La manteca no es para los gatos"',
+      },
+      {
+        name: 'Propósito',
+        grade: '6c+/7a', length: '100m', stars: 4,
+        fa: 'Santiago Peña, Javier Vazques, Martín López Abad (Mar 2018)',
+        note: 'Cara Norte. Excelente calidad de roca, secuencias delicadas en el crux.',
+        pitches: [
+          { n:1, len:'45m', grade:'6a+' },
+          { n:2, len:'40m', grade:'6c+/7a', note:'CRUX' },
+        ],
+        descent: 'Por "La manteca no es para los gatos"',
+      },
+      {
+        name: 'Mundo Offwith',
+        grade: '6b+', length: '120m', stars: 4,
+        fa: 'Lucas Alzamora, Diego Nakamura (3 Abr 2009)',
+        note: 'Cara Oeste.',
+        pitches: [
+          { n:1, len:'40m', grade:'6a+', note:'1 spit' },
+          { n:2, len:'25m', grade:'6b' },
+          { n:3, len:'45m', grade:'6b+' },
+        ],
+        equipment: 'Juego completo de friends incluyendo #5-6, 2 cuerdas ×50m',
+        descent: 'Desde cumbre izquierda: rappeles de "La manteca". Desde cumbre derecha: 3 rappeles en spits.',
+      },
+      {
+        name: 'El mal que el hombre hizo',
+        grade: '6c', length: '120m', stars: 4,
+        fa: 'Lucas Alzamora, Chuky Fernandez, Burbu Sabattini (Jun 2009)',
+        note: 'Cara Oeste. Crack en "off-width" técnico.',
+        pitches: [
+          { n:1, len:'40m', grade:'6a+' },
+          { n:2, len:'40m', grade:'6c', note:'2 spits — off-width técnico' },
+          { n:3, len:'40m', grade:'5+' },
+        ],
+        descent: 'Igual que "Mundo Offwith"',
+      },
+      {
+        name: 'Un cohete al misil',
+        grade: '6b', length: '120m', stars: 3,
+        fa: 'Lucas Alzamora, Chuky Fernandez, Burbu Sabattini (Jun 2009)',
+        note: 'Cara Oeste.',
+        pitches: [
+          { n:1, len:'40m', grade:'6a' },
+          { n:2, len:'40m', grade:'6b', note:'CRUX — diedro' },
+          { n:3, len:'40m', grade:'5+' },
+        ],
+        descent: 'Igual que "Mundo Offwith"',
+      },
+      {
+        name: 'Caíate',
+        grade: '6a', length: '50m', stars: 3,
+        fa: 'Matias Korten, Tomás Del Giovannino, Martin López Abad (Abr 2019)',
+        note: 'Cara Oeste — sigue puntos débiles de la placa hasta la reunión de "Propósito".',
+        pitches: [
+          { n:1, len:'50m', grade:'6a' },
+        ],
+        descent: 'Igual que "Mundo Offwith"',
+      },
+      {
+        name: 'King Line',
+        grade: '7b+', length: '85m', stars: 4,
+        fa: 'Matias Korten, Tomás Del Giovannino, Martin López Abad (Abr 2019)',
+        note: 'Cara Sur. Crack de dedos a placa atlética. Demanda resistencia y psicología.',
+        pitches: [
+          { n:1, len:'45m', grade:'7b+', note:'Crack de dedos — travesía expuesta ~4m sin protección' },
+          { n:2, len:'40m', grade:'variable', note:'Nunca guiado — vertical con 1 spit, protección pequeña' },
+        ],
+        descent: 'Bajar por la cara sur',
+      },
+      {
+        name: 'Motiveitor',
+        grade: '6c', length: '40m', stars: 3,
+        fa: 'Tomás del Giovannino, Martín López Abad (Abr 2019)',
+        note: 'Cara Sur. Fisuras discontinuas, protección pequeña.',
+        pitches: [
+          { n:1, len:'40m', grade:'6c', note:'Fisuras discontinuas — llega al espolón' },
+        ],
+        descent: 'Por la cara sur',
+      },
+    ]
+  },
+  {
+    id: 'muralla-misil',
+    name: 'Muralla del Misil',
+    desc: 'Gran placa vertical inmediatamente a la izquierda de la cabeza del Misil.',
+    approach: '~2h',
+    grades: ['6a', '6a+', '6b+', '6c/+'],
+    maxGrade: '6c+',
+    routes: [
+      {
+        name: 'Tapándole la boca a Zanatta',
+        grade: '6b+', length: '160m', stars: 3,
+        fa: 'Carloncho Guerra, Macu Zanotti (2 Sep 2011)',
+        equipment: '2 cuerdas ×50m, juego completo de friends, cintas, exprés',
+        descent: '1 rappel en spit cara sur, luego descenso por pedrero',
+      },
+      {
+        name: 'Tolita',
+        grade: '6a+', length: '90m', stars: 3,
+        fa: 'Lucas Alzamora, Maru Criscuolo, Nico Zabella (25 Mar 2016)',
+        pitches: [
+          { n:1, len:'50m', grade:'6a+', note:'Canaleta lado izquierdo' },
+          { n:2, len:'40m', grade:'6a', note:'Canaleta grande' },
+        ],
+        note: 'Empalma con "Burilador precoz" arriba.',
+        equipment: '2 cuerdas ×60m, juego completo de friends, cintas',
+      },
+      {
+        name: 'Burilador precoz',
+        grade: '6a+', length: '175m', stars: 3,
+        fa: 'Lucas Alzamora, Viri Bovo (2 Sep 2011)',
+        pitches: [
+          { n:1, len:'50m', grade:'6a' },
+          { n:2, len:'35m', grade:'6a+' },
+          { n:3, len:'35m', grade:'5+', note:'Chimenea' },
+          { n:4, len:'55m', grade:'6a+', note:'Sistema de crestas' },
+        ],
+      },
+      {
+        name: 'Esa aguja no tiene fisura',
+        grade: '6a', length: '110m', stars: 3,
+        fa: 'Seba Vergara, Pela Lopez, Tincho Blando (Abr 2009)',
+        pitches: [
+          { n:1, len:'55m', grade:'5+', note:'1 spit — diedro evidente' },
+          { n:2, len:'55m', grade:'6a', note:'Diedro forma de libro — llega a la cresta' },
+        ],
+      },
+      {
+        name: 'Los deshollinadores de Hollywood',
+        grade: '6b+', length: '140m', stars: 3,
+        fa: 'Lucas Alzamora, Carloncho Guerra, Esteban Miguel (10 Nov 2016)',
+        pitches: [
+          { n:1, len:'55m', grade:'6b+', note:'Fisura ancha — jamming técnico' },
+          { n:2, len:'55m', grade:'6b', note:'Sistema de fisuras' },
+          { n:3, len:'30m', grade:'6a', note:'Más fácil — llega a la cresta' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos completos de friends incluyendo #4-5',
+      },
+      {
+        name: 'Camarero desencamaronamelo',
+        grade: '6c/+', length: '120m', stars: 3,
+        fa: 'Lucas Alzamora, Carloncho Guerra (10 Nov 2016)',
+        pitches: [
+          { n:1, len:'60m', grade:'6c/+', note:'Diedro fino — movidas atléticas bajo techo — CRUX' },
+          { n:2, len:'60m', grade:'6b', note:'Sistema de fisuras más cerrado con paso duro' },
+        ],
+        descent: '2 rappeles en spits',
+      },
+      {
+        name: 'El Asomista',
+        grade: '6a', length: '120m', stars: 3,
+        fa: 'Lucas Alzamora, Roberto Rivas, Willy Hubeli (14 Feb 2016)',
+        pitches: [
+          { n:1, len:'50m', grade:'5+', note:'Pasos técnicos en escalones fracturados' },
+          { n:2, len:'40m', grade:'6a', note:'Redes de fisuras — pasos técnicos' },
+          { n:3, len:'30m', grade:'6a', note:'Bloques entre paredes' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos completos de friends',
+        descent: 'Travesear 20m izquierda en la cresta a rappeles de "Camarero...", 2 rappeles',
+      },
+    ]
+  },
+  {
+    id: 'jinete',
+    name: 'Aguja El Jinete',
+    desc: 'Aguja con 3 vías establecidas.',
+    approach: '~1h',
+    grades: ['6a+', '6b', '6b+'],
+    maxGrade: '6b+',
+    routes: [
+      {
+        name: 'La S-G',
+        grade: '6b+', length: '120m', stars: 3,
+        fa: 'Lucas Alzamora, Matias Estevan, Juan Mut (4 Nov 2017)',
+        pitches: [
+          { n:1, len:'50m', grade:'6a+' },
+          { n:2, len:'30m', grade:'6b/+' },
+          { n:3, len:'40m', grade:'4+' },
+        ],
+        equipment: '2 juegos completos de friends (incluyendo #4), cintas largas, 2 cuerdas ×60m',
+        descent: 'Un rappel de 60m desde reunión en bloque, luego marcha',
+      },
+      {
+        name: 'No más plegarias',
+        grade: '6a+', length: '120m', stars: 3,
+        fa: 'Diego Nakamura, Bruno Lacobellis, Ariel Meijome (Mar 2016)',
+        pitches: [
+          { n:1, len:'30m', grade:'4+' },
+          { n:2, len:'40m', grade:'6a+' },
+          { n:3, len:'40m', grade:'6a' },
+          { n:4, len:'-', grade:'fácil', note:'Marcha hasta la cumbre' },
+        ],
+        equipment: '2 juegos completos de friends, cintas largas, 2 cuerdas ×60m',
+        descent: 'Rappeles por la pared central o descenso de "La S-G"',
+      },
+      {
+        name: 'Sin nombre',
+        grade: '6b', length: '220m', stars: 0,
+        fa: 'Rodrigo Vera Sanchez, Tarcho Rizardi',
+        note: 'Sin descripción detallada disponible.',
+      },
+    ]
+  },
+  {
+    id: 'prenada',
+    name: 'Aguja Preñada',
+    desc: 'Formación poco conocida. Visible desde el talud de aproximación cerca de la Aguja Oreja.',
+    approach: '+2h desde campamento río',
+    grades: ['6c/+'],
+    maxGrade: '6c+',
+    routes: [
+      {
+        name: 'Mal de amores',
+        grade: '6c/+', length: '145m', stars: 4,
+        fa: 'Lucas Alzamora, Mati Korten, Andy Tula (Abr 2019)',
+        pitches: [
+          { n:1, len:'55m', grade:'6c/+', note:'CRUX — diedro técnico' },
+          { n:2, len:'50m', grade:'4+' },
+          { n:3, len:'40m', grade:'6a+/b' },
+        ],
+        equipment: '2 juegos completos de friends (tallas pequeñas imprescindibles), cintas largas, 2 cuerdas ×60m',
+        descent: 'Rapelar desde cordino en bloque lado izquierdo, marcha el resto',
+      },
+    ]
+  },
+  {
+    id: 'pilar-rojo',
+    name: 'Aguja Pilar Rojo',
+    desc: 'Pilar de 200m en cara sur, entre la Aguja Principal y Ectelion. Granito rojo muy vertical.',
+    approach: '~1h 30min',
+    grades: ['6b+', '6c', '7b'],
+    maxGrade: '7b?',
+    routes: [
+      {
+        name: 'Pilar Rojo',
+        grade: '6b+', length: '215m', stars: 4,
+        fa: 'Esteban "Morsa" Degregori, Cintia "Hormiga" Percivati (Nov 2010)',
+        pitches: [
+          { n:1, len:'60m', grade:'6b+' },
+          { n:2, len:'55m', grade:'6b+' },
+          { n:3, len:'60m', grade:'6b+' },
+          { n:4, len:'40m', grade:'5+' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos completos de friends, stoppers, cintas largas',
+        descent: '3 rappeles desde bloques naturales — lado derecho del pilar (mirando hacia afuera)',
+      },
+      {
+        name: 'Perro Chivato',
+        grade: '6c', length: '150m', stars: 3,
+        fa: 'Lucas Alzamora, Juan Pablo Girolamo (7 Mar 2019)',
+        note: 'Vía no terminada — termina en placa lisa arriba.',
+        pitches: [
+          { n:1, len:'60m', grade:'6b+', note:'Sección chimenea' },
+          { n:2, len:'55m', grade:'6c', note:'2 spits — expuesto' },
+          { n:3, len:'35m', grade:'6b', note:'Incompleto — placa lisa arriba' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos de friends #4-5, pitones pequeños, cintas largas',
+        descent: '3 rappeles en spits lado izquierdo — llevar material de reposición',
+      },
+      {
+        name: 'Intento..',
+        grade: '7b?', length: '60m', stars: 4,
+        fa: 'Lucas Alzamora, Aztlan Medio, Benja Sosa (Nov 2019)',
+        note: '¡Increíble! Crack fino, ligeramente desplomado. Vía no terminada.',
+        pitches: [
+          { n:1, len:'40m', grade:'6b' },
+          { n:2, len:'20m', grade:'7b??', note:'2 spits — crack fino técnico — INCOMPLETO' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos de friends con pequeños repetidos, stoppers, cintas largas',
+        descent: 'Un rappel de 60m hasta el suelo',
+      },
+    ]
+  },
+  {
+    id: 'adidas',
+    name: 'Aguja Adidas',
+    desc: 'Aguja con vías de altísima dificultad, incluyendo "El Nazo (The Nose)" de 7b+.',
+    approach: '~2h',
+    grades: ['6a', '6c+', '7a', '7b+'],
+    maxGrade: '7b+',
+    routes: [
+      {
+        name: 'Botella no caza ratón',
+        grade: '6c+', length: '170m', stars: 5,
+        fa: 'Lucas Alzamora, Diego Nakamura (1 Abr 2009)',
+        pitches: [
+          { n:1, len:'40m', grade:'6a+', note:'1 spit' },
+          { n:2, len:'20m', grade:'6c+' },
+          { n:3, len:'30m', grade:'6a', note:'1 spit' },
+          { n:4, len:'35m', grade:'6b+', note:'1 spit' },
+          { n:5, len:'50m', grade:'6a' },
+        ],
+        equipment: '2 cuerdas ×50-60m, juegos de friends hasta #4-5, stoppers, cintas',
+        descent: 'Rappeles desde spits en cumbre',
+      },
+      {
+        name: 'A Batman le lloro la nena',
+        grade: '7a', length: '115m', stars: 4,
+        fa: 'Lucas Alzamora, Carloncho Guerra, Diego Molina (7 Abr 2012)',
+        pitches: [
+          { n:1, len:'50m', grade:'6c+/7a', note:'2 spits' },
+          { n:2, len:'40m', grade:'7a', note:'2 spits' },
+          { n:3, len:'25m', grade:'6b+', note:'2 spits' },
+        ],
+        descent: 'Rappeles desde spits',
+      },
+      {
+        name: 'El Nazo (The Nose)',
+        grade: '7b+', length: '170m', stars: 5,
+        fa: 'Lucas Alzamora, Aztlan Medio (Abr 2015)',
+        pitches: [
+          { n:1, len:'40m', grade:'7b+', note:'2 spits' },
+          { n:2, len:'35m', grade:'6c+', note:'2 spits' },
+          { n:3, len:'40m', grade:'6c', note:'2 spits' },
+          { n:4, len:'50m', grade:'6a' },
+        ],
+        equipment: '2 cuerdas ×50-60m, juegos de friends hasta #4-5, stoppers, cintas',
+        descent: 'Rappeles desde spits en cumbre',
+      },
+      {
+        name: 'Narcoclimbers',
+        grade: '6a', length: '130m', stars: 3,
+        fa: 'Tomás del Giovannino, Martín López Abad (Abr 2019)',
+        note: 'Sin reuniones en ruta.',
+        pitches: [
+          { n:1, len:'55m', grade:'5°' },
+          { n:2, len:'35m', grade:'6a' },
+          { n:3, len:'-', grade:'fácil', note:'Terreno variable' },
+        ],
+      },
+    ]
+  },
+  {
+    id: 'oreja',
+    name: 'Aguja Oreja',
+    desc: 'Aguja de acceso largo con 2 vías de calidad.',
+    approach: '~2h 30min',
+    grades: ['6b', '6c'],
+    maxGrade: '6c',
+    routes: [
+      {
+        name: 'Sólidas Murallas',
+        grade: '6b', length: '270m', stars: 3,
+        fa: 'Lucas Alzamora, Maxi Astete Millan (Dic 2008)',
+        pitches: [
+          { n:1, len:'50m', grade:'6a+', note:'1 spit' },
+          { n:2, len:'50m', grade:'5+' },
+          { n:3, len:'50m', grade:'5°' },
+          { n:4, len:'45m', grade:'6b', note:'2 spits' },
+          { n:5, len:'50m', grade:'6a', note:'2 spits' },
+          { n:6, len:'25m', grade:'3°' },
+        ],
+        equipment: '2 cuerdas ×50m, juego completo de friends #1-3, stoppers, cintas largas',
+        descent: '5 rappeles',
+      },
+      {
+        name: 'Efecto Venturi',
+        grade: '6c', length: '200m', stars: 4,
+        fa: 'Lucas Alzamora, Diego Nakamura (May 2018)',
+        pitches: [
+          { n:1, len:'55m', grade:'6b' },
+          { n:2, len:'45m', grade:'6a' },
+          { n:3, len:'40m', grade:'6c' },
+          { n:4, len:'60m', grade:'6a', note:'2 spits' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos completos de friends, cintas largas',
+        descent: 'Por la línea de rappeles de "Sólidas Murallas"',
+      },
+    ]
+  },
+  {
+    id: 'tango',
+    name: 'Aguja Gran Torre del Tango',
+    desc: 'Aguja con vías de nombre tanguero y dificultades altas.',
+    approach: '~2h',
+    grades: ['6c', '6c+', '7a+'],
+    maxGrade: '7a+',
+    routes: [
+      {
+        name: 'Por una cabeza',
+        grade: '6c+/7a', length: '155m', stars: 4,
+        fa: 'Lucas Alzamora, Diego Nakamura (9 Dic 2011)',
+        pitches: [
+          { n:1, len:'55m', grade:'6b', note:'Diedro/placa norte — movidas atléticas' },
+          { n:2, len:'40m', grade:'6a+', note:'Fisura diagonal con vegetación' },
+          { n:3, len:'30m', grade:'6c+/7a', note:'CRUX — diedro técnico con techo' },
+          { n:4, len:'30m', grade:'6a', note:'Bloques y cracks' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos completos de friends #1-4, stoppers, cintas largas',
+        descent: '2 rappeles de 60m desde spits',
+      },
+      {
+        name: 'Cambalache',
+        grade: '6c', length: '60m', stars: 4,
+        fa: 'Angelina Di Prinzio, Fernando Feña (Dic 2017)',
+        pitches: [
+          { n:1, len:'40m', grade:'6a', note:'Aproximación fácil hasta la repisa' },
+          { n:2, len:'40m', grade:'6c', note:'Crack continuo mano a off-width' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos de friends (incluyendo #4), stoppers, cintas',
+        descent: '2 rappeles de 60m desde spits',
+      },
+      {
+        name: 'Malena',
+        grade: '6c+', length: '120m', stars: 4,
+        fa: 'Angelina Di Prinzio, Fernando Feña (Dic 2017)',
+        note: 'Roca algo suelta en el L3.',
+        pitches: [
+          { n:1, grade:'6a+', note:'Diedro/fisura' },
+          { n:2, grade:'6c+', note:'Fisuras con crux desplomado' },
+          { n:3, grade:'6b', note:'Diedro continuado — techo suave' },
+        ],
+        equipment: '2 cuerdas ×60m, 2 juegos de friends, stoppers, cintas',
+      },
+      {
+        name: 'Caminito',
+        grade: '7a+?', length: '80m', stars: 4,
+        fa: 'Lucas Alzamora, Diego Nakamura (2009) — INCOMPLETO',
+        note: 'Vía no terminada.',
+        pitches: [
+          { n:1, len:'40m', grade:'6c', note:'Diedro/fisura ligeramente desplomado' },
+          { n:2, len:'40m', grade:'7a+?', note:'Placa en forma de omoplato — travesía delicada' },
+        ],
+      },
+    ]
+  },
+  {
+    id: 'bolillo',
+    name: 'Aguja El Bolillo',
+    desc: 'Aguja accesible con descenso caminando. Buena opción para empezar en el valle.',
+    approach: '~40 min',
+    grades: ['6a+', '6b+'],
+    maxGrade: '6b+',
+    routes: [
+      {
+        name: 'Gente Buena si Las Hay',
+        grade: '6b+', length: '320m', stars: 3,
+        fa: 'Lucas Alzamora, David Zalasar, Paula Senor (Feb 2008)',
+        pitches: [
+          { n:1, len:'40m', grade:'5+' },
+          { n:2, len:'45m', grade:'5°' },
+          { n:'3-4', len:'90m', grade:'4+' },
+          { n:5, len:'40m', grade:'6a+' },
+          { n:6, len:'40m', grade:'6a+' },
+          { n:7, len:'40m', grade:'4+' },
+          { n:8, len:'30m', grade:'6b+' },
+        ],
+        equipment: '1 cuerda ×50m, juego completo de friends, stoppers, cintas largas',
+        descent: 'Rappel corto, descenso por cañón izquierdo/derecho',
+      },
+      {
+        name: 'Sillita de Carne',
+        grade: '6b+', length: '230m', stars: 3,
+        fa: 'Lucas Alzamora, Diego Nakamura (10 Dic 2011)',
+        pitches: [
+          { n:1, len:'60m', grade:'5+' },
+          { n:2, len:'30m', grade:'6a+' },
+          { n:3, len:'50m', grade:'6a+' },
+          { n:4, len:'60m', grade:'5°' },
+          { n:5, len:'30m', grade:'6b+' },
+        ],
+        equipment: '1 cuerda ×50m, juego completo de friends, stoppers, cintas largas',
+        descent: 'Rappel corto, descenso por cañón',
+      },
+      {
+        name: 'Lost',
+        grade: '6a+', length: '210m', stars: 2,
+        fa: 'Adrián Parella, Claudio Napoli (10 Dic 2011)',
+        pitches: [
+          { n:1, len:'35m', grade:'4+' },
+          { n:2, len:'20m', grade:'4+' },
+          { n:3, len:'35m', grade:'5+/6a' },
+          { n:4, len:'30m', grade:'6a+' },
+          { n:5, len:'30m', grade:'5°' },
+          { n:6, len:'30m', grade:'5+' },
+          { n:7, len:'30m', grade:'4+' },
+        ],
+        equipment: '1 cuerda ×50m, juego completo de friends, stoppers, cintas largas',
+        descent: 'Rappel corto, descenso por cañón',
+      },
+    ]
+  },
+  {
+    id: 'carlitos',
+    name: 'Aguja Carlitos y Cassata',
+    desc: 'Buenas características para iniciación en escalada. Acceso por pedrero izquierdo desde la base del Misil.',
+    approach: '~2h',
+    grades: ['5+', '6a+'],
+    maxGrade: '6a+',
+    routes: [
+      {
+        name: 'Descenso a ciegas',
+        grade: '5+', length: '90m', stars: 2,
+        fa: 'Carlos Cagnoli, Mario Nakagama (Abr 2008)',
+        pitches: [
+          { n:1, len:'25m', grade:'5+', note:'Repisa amplia' },
+          { n:2, len:'60m', grade:'5+', note:'Escalada accesible — paso delicado al final' },
+          { n:3, len:'5m', grade:'4°', note:'Terreno cerca de la cumbre' },
+        ],
+        equipment: '2 cuerdas ×60m, juego completo de friends, stoppers pequeños, cintas',
+        descent: 'Rappel de 60m desde reunión natural cara sur, luego pedrero',
+      },
+      {
+        name: 'Cassata',
+        grade: '6a+', length: '32m', stars: 3,
+        fa: 'Fede Ruffini, Pablo Artigue, Santi, Jony',
+        note: 'Diedro de 32m con roca tricolor. 2 spits en la cima (tipo U y pitón).',
+        pitches: [
+          { n:1, len:'32m', grade:'6a+', note:'Diedro hermoso — 2 spits en cumbre' },
+        ],
+      },
+    ]
+  },
+  {
+    id: 'champinon',
+    name: 'Aguja El Champiñón',
+    desc: 'Pequeña aguja con cima partida. Detrás de la Muralla del Misil.',
+    approach: '~2h 15min',
+    grades: ['6b+'],
+    maxGrade: '6b+',
+    routes: [
+      {
+        name: 'La vedette',
+        grade: '6b+', length: '135m', stars: 3,
+        fa: 'Lucas Alzamora, Diego Nakamura, Maxi Astete Millan (1 May 2008)',
+        note: 'Primera vía de la aguja. Algunas reuniones instaladas.',
+        equipment: '2 cuerdas ×60m, juego completo de friends con repetidos, cintas',
+        descent: 'Múltiples rappeles cara sur',
+      },
+    ]
+  },
+  {
+    id: 'torre-gris',
+    name: 'Aguja Torre Gris',
+    desc: 'Aguja solitaria detrás de Cresta de Gallo. Una sola vía de alta calidad que puede volverse clásica.',
+    approach: '~2h 30min',
+    grades: ['6a+'],
+    maxGrade: '6a+',
+    routes: [
+      {
+        name: 'Zumo Pascual',
+        grade: '6a+', length: '140m', stars: 3,
+        fa: 'Lucas Alzamora, Diego Nakamura (29 May 2009)',
+        pitches: [
+          { n:1, len:'40m', grade:'6a' },
+          { n:2, len:'35m', grade:'6a+' },
+          { n:3, len:'65m', grade:'6a + 3°' },
+        ],
+        equipment: 'Juego completo de friends, stoppers, 2 cuerdas ×50m, cintas, exprés',
+        descent: '3 rappeles por la línea de ascenso',
+      },
+    ]
+  },
+  {
+    id: 'cresta-gallo',
+    name: 'Aguja Cresta de Gallo',
+    desc: 'Gran bloque de granito naranja con placa vertical coronada por una cresta lateral.',
+    approach: '~2h 15min',
+    grades: ['6c'],
+    maxGrade: '6c',
+    routes: [
+      {
+        name: 'El Cocorito',
+        grade: '6c', length: '115m', stars: 4,
+        fa: 'Lucas Alzamora, Maxi Astete Millan (Dic 2008)',
+        pitches: [
+          { n:1, len:'45m', grade:'6c', note:'2 spits — protección de bolsillos' },
+          { n:2, len:'40m', grade:'6b' },
+          { n:3, len:'30m', grade:'6a', note:'2 spits' },
+        ],
+        equipment: '2 cuerdas ×50m, juego completo de friends (énfasis #0.1-0.4), stoppers, cintas, exprés',
+        descent: '3 rappeles',
+      },
+    ]
+  },
+  {
+    id: 's2',
+    name: 'Aguja S2',
+    desc: 'Placa vertical homogénea detrás del Bolillo. Cima triangular.',
+    approach: '~1h–1h 30min',
+    grades: ['6a', '6b+'],
+    maxGrade: '6b+',
+    routes: [
+      {
+        name: 'Petó el Gordo',
+        grade: '6a', length: '120m', stars: 3,
+        fa: 'Lucas Alzamora, Diego Nakamura (14 Jun 2008)',
+        pitches: [
+          { n:1, len:'45m', grade:'6a' },
+          { n:2, len:'35m', grade:'6a' },
+          { n:3, len:'45m', grade:'5+/6a' },
+        ],
+        equipment: '1 cuerda ×50m, juego completo de friends, stoppers pequeños, cintas, exprés',
+        descent: 'Destrepar o rapelar detrás de la cumbre',
+      },
+      {
+        name: 'El Recolector de Basura',
+        grade: '6b+', length: '110m', stars: 3,
+        fa: 'Lucas Alzamora, Willy Ubelli (Abr 2015)',
+        pitches: [
+          { n:1, len:'55m', grade:'6b+' },
+          { n:2, len:'50m', grade:'6a' },
+        ],
+        equipment: '1 cuerda ×60m, juego completo de friends #1-3, cintas, exprés',
+        descent: 'Igual que "Petó el Gordo"',
+      },
+    ]
+  },
+  {
+    id: 'peine',
+    name: 'Aguja El Peine',
+    desc: 'Aguja accesible por el mismo cañón del S2.',
+    approach: '~1h–1h 30min',
+    grades: ['6c'],
+    maxGrade: '6c',
+    routes: [
+      {
+        name: 'Los piojos',
+        grade: '6c', length: '130m', stars: 3,
+        fa: 'Carloncho Guerra, Lucas Alzamora, Diego Molina (8 Abr 2012)',
+        pitches: [
+          { n:1, len:'40m', grade:'6b' },
+          { n:2, len:'40m', grade:'6b+/c' },
+          { n:3, len:'50m', grade:'6a' },
+        ],
+        equipment: '2 juegos completos de friends, protección pequeña, 2 cuerdas ×50m, cintas',
+        descent: 'Cañón bajo aguja S2 hasta el acarreo principal',
+      },
+    ]
+  },
+  {
+    id: 'condor',
+    name: 'Aguja El Cóndor',
+    desc: 'Bloque con punta que recuerda a la cabeza de un cóndor. Grandes losas.',
+    approach: '~1h 30min',
+    grades: ['6b', '6b+', '6c'],
+    maxGrade: '6c',
+    routes: [
+      {
+        name: 'Ducagd',
+        grade: '6b', length: '140m', stars: 3,
+        fa: 'Lucas Alzamora, Adrián Parella (Jun 2009)',
+        pitches: [
+          { n:1, len:'45m', grade:'6b' },
+          { n:2, len:'45m', grade:'6a' },
+          { n:3, len:'50m', grade:'4+' },
+        ],
+        equipment: '1 cuerda ×50m, juego completo de friends, stoppers, cintas',
+      },
+      {
+        name: 'Piedra que rueda no hace Mouse',
+        grade: '6c', length: '140m', stars: 4,
+        fa: 'Carloncho Guerra, Lucas Alzamora, Peta Ramirez (5 Mar 2011)',
+        pitches: [
+          { n:1, len:'45m', grade:'6a+/6b' },
+          { n:2, len:'35m', grade:'6c' },
+          { n:3, len:'60m', grade:'5°' },
+        ],
+        equipment: '1 cuerda ×50m, juego completo de friends, stoppers, cintas',
+      },
+      {
+        name: 'Gargamel',
+        grade: '6b', length: '120m', stars: 3,
+        fa: 'Lucas Alzamora, Willy Ubelli (Abr 2015)',
+        pitches: [
+          { n:1, len:'50m', grade:'6b' },
+          { n:2, len:'50m', grade:'6a' },
+          { n:'', len:'20m', grade:'3°', note:'Sin cuerda' },
+        ],
+        equipment: '1 cuerda ×50m, juego completo de friends, stoppers, cintas',
+      },
+    ]
+  },
+  {
+    id: 'lanzamiento',
+    name: 'Aguja Base de Lanzamiento',
+    desc: 'Aguja compacta con 2 vías.',
+    approach: '~1h 30min',
+    grades: ['6b+', '6c'],
+    maxGrade: '6c',
+    routes: [
+      {
+        name: 'Bocato di cardinal',
+        grade: '6c', length: '80m', stars: 3,
+        fa: 'Lucas Alzamora, Adrián Parella, Gabo Zurdo (Jun 2009)',
+        pitches: [
+          { n:1, len:'40m', grade:'6a' },
+          { n:2, len:'40m', grade:'6c', note:'1 spit' },
+        ],
+        equipment: '2 juegos completos de friends, 2 cuerdas ×60m, cintas',
+        descent: 'Rappel desde cumbre hacia el cañón derecho',
+      },
+      {
+        name: 'Io creo en el amor!!!',
+        grade: '6b+', length: '90m', stars: 3,
+        fa: 'Carloncho Guerra, Lucas Alzamora (6 Abr 2012)',
+        pitches: [
+          { n:1, len:'40m', grade:'6b+' },
+          { n:2, len:'50m', grade:'6b' },
+        ],
+        equipment: '2 juegos completos de friends, 2 cuerdas ×60m, cintas',
+        descent: 'Rappel desde cumbre hacia el cañón derecho',
+      },
+    ]
+  },
+  {
+    id: 'napia',
+    name: 'Aguja La Napia',
+    desc: 'Aguja con una vía clásica de 150m.',
+    approach: '~2h',
+    grades: ['6a+'],
+    maxGrade: '6a+',
+    routes: [
+      {
+        name: 'De mi cuarto en soledad',
+        grade: '6a+', length: '150m', stars: 3,
+        fa: 'Lucas Alzamora, Diego Nakamura, Maxi Astete Millan (6 May 2008)',
+        pitches: [
+          { n:1, len:'40m', grade:'6a' },
+          { n:2, len:'40m', grade:'6a' },
+          { n:3, len:'30m', grade:'4+' },
+          { n:4, len:'25m', grade:'6a+' },
+          { n:5, len:'15m', grade:'6a' },
+        ],
+        equipment: '1 juego completo de friends hasta #3, stoppers, 2 cuerdas ×50m, cintas',
+        descent: '2 rappeles usando spits y stoppers',
+      },
+    ]
+  },
+  {
+    id: 'alfenique',
+    name: 'Aguja El Alfeñique',
+    desc: 'Aguja delgada y estética con una vía de 4 largos.',
+    approach: '~2h',
+    grades: ['6b+'],
+    maxGrade: '6b+',
+    routes: [
+      {
+        name: 'Que sushi ni sushi, yo quiero una milanga del edén!!!',
+        grade: '6b+', length: '190m', stars: 3,
+        fa: 'Lucas Alzamora, Viri Bovo (1 Sep 2011)',
+        pitches: [
+          { n:1, len:'50m', grade:'6a', note:'1 spit' },
+          { n:2, len:'50m', grade:'6b' },
+          { n:3, len:'45m', grade:'3+', note:'1 spit' },
+          { n:4, len:'45m', grade:'6b+', note:'1 spit' },
+        ],
+        equipment: '2 cuerdas ×50m, juego completo de friends hasta #4, stoppers, cintas',
+        descent: '4 rappeles por la misma línea',
+      },
+    ]
+  },
+  {
+    id: 'plegarias',
+    name: 'Aguja Plegarias',
+    desc: 'Aguja con una vía en crack/diedro.',
+    approach: '~2h',
+    grades: ['6b'],
+    maxGrade: '6b',
+    routes: [
+      {
+        name: 'Oraciones por juancito',
+        grade: '6b', length: '150m', stars: 3,
+        fa: 'Lucas Alzamora, Diego Nakamura (20 Nov 2009)',
+        pitches: [
+          { n:1, len:'40m', grade:'5+', note:'Diedro/placa hasta fisura vertical' },
+          { n:2, len:'25m', grade:'6b', note:'Crack angosto — técnico' },
+          { n:3, len:'45m', grade:'6a', note:'Cracks hasta repisa grande' },
+          { n:4, len:'40m', grade:'5+', note:'Bloques hasta cumbre' },
+        ],
+        equipment: '2 cuerdas ×50m, juego completo de friends, cuñas, cintas largas',
+        descent: '2 rappeles por canaleta central en reuniones naturales con cintas',
+      },
+    ]
+  },
+  {
+    id: 'torre-real',
+    name: '★ Aguja Torre Real',
+    desc: 'Aguja compacta con una vía de dificultad alta.',
+    approach: '~2h',
+    grades: ['6b', '7b?'],
+    maxGrade: '7b?',
+    routes: [
+      {
+        name: 'Alta vista club social',
+        grade: '7b?/6b oblig.', length: '105m', stars: 4,
+        fa: 'Lucas Alzamora, Diego Nakamura, Carloncho Guerra, Diego Molina (29 Abr 2012)',
+        pitches: [
+          { n:1, len:'50m', grade:'7b? o 6a', note:'Opción diedro fino o variante por canal' },
+          { n:2, len:'45m', grade:'6b', note:'Crack en granito naranja — terreno se inclina a la derecha' },
+          { n:3, len:'10m', grade:'5+', note:'Chimenea ancha hasta cumbre' },
+        ],
+        equipment: '2 juegos completos de friends, 2 cuerdas ×50m, cintas largas',
+        descent: '2 rappeles en reuniones naturales en bloques',
+      },
+    ]
+  },
+  {
+    id: 'rey',
+    name: 'Aguja El Rey',
+    desc: 'Aguja con vía mixta en roca y goulotte.',
+    approach: '~2h',
+    grades: ['6a+'],
+    maxGrade: '6a+',
+    routes: [
+      {
+        name: 'Jaque mate',
+        grade: '6a+', length: '200m', stars: 3,
+        fa: 'Diego Nakamura, Diego Molina (25 Mar 2011)',
+        note: 'Inicio por goulotte con algo de roca suelta. Crack diagonal, pequeño techo, placa fisurada vertical, bloque en cara oeste, chimenea hasta cumbre.',
+        equipment: 'Descenso pre-acordado con abandono de material',
+        descent: 'Rappeles a la derecha de la línea de ascenso usando reuniones naturales y spits',
+      },
+    ]
+  },
+  {
+    id: 'fortaleza',
+    name: 'Aguja Fortaleza',
+    desc: 'Aguja con una vía parcialmente en artificial (A1).',
+    approach: '~2h',
+    grades: ['7b/A1'],
+    maxGrade: '7b/A1',
+    routes: [
+      {
+        name: 'Ya no sos igual',
+        grade: '7b, A1', length: '150m', stars: 3,
+        fa: 'Diego Nakamura, Diego Molina (26 Mar 2011)',
+        note: 'Travesía de 30m a la izquierda hasta diedro fino; terreno más fácil hasta diedro norte; bloques hasta base de placa principal (vertical, fisuras finas); reunión a mitad separa sección libre de A1 (los dedos no entran); sección inferior aún más fina — artificial obligatorio.',
+        equipment: 'Material para abandono en descenso',
+        descent: 'Rappeles por la misma línea usando reuniones naturales y spits',
+      },
+    ]
+  },
+];
+
+// ---- UTILS ----
+function gradeClass(g) {
+  if (!g) return '';
+  const n = g.replace(/[^0-9a-z+/]/gi, '').toLowerCase();
+  if (n.startsWith('4') || n.startsWith('5')) return 'g-4';
+  if (n.startsWith('6a') || n.startsWith('6b')) return 'g-6a';
+  if (n.startsWith('6c') || n.startsWith('7')) return 'g-6c';
+  return '';
+}
+
+function stars(n) {
+  return '★'.repeat(n) + '☆'.repeat(5 - n);
+}
+
+function renderAgujaCard(a) {
+  const gc = gradeClass(a.maxGrade);
+  return `<div class="aguja-card" onclick="showAguja('${a.id}')">
+    <div class="aguja-card-header">
+      <div class="aguja-name">${a.name}</div>
+      <span class="aguja-routes-count">${a.routes.length} vía${a.routes.length !== 1 ? 's' : ''}</span>
+    </div>
+    <div class="aguja-meta">
+      <span class="aguja-chip chip-approach">⏱ ${a.approach}</span>
+      <span class="aguja-chip chip-grade ${gc}">${a.maxGrade}</span>
+    </div>
+  </div>`;
+}
+
+function renderAgujaDetail(a) {
+  const routeCards = a.routes.map((r, i) => {
+    const gc = gradeClass(r.grade);
+    const pitchRows = (r.pitches || []).map(p =>
+      `<div class="pitch-row">
+        <div class="pitch-num">${p.n}</div>
+        <div class="pitch-info">
+          <div class="pitch-grade-len">
+            <span class="pitch-grade ${gc}">${p.grade}</span>
+            ${p.len ? `<span class="pitch-len">${p.len}</span>` : ''}
+          </div>
+          ${p.note ? `<div class="pitch-note">${p.note}</div>` : ''}
+        </div>
+      </div>`
+    ).join('');
+
+    const starsHTML = r.stars > 0 ? `<span class="badge badge-stars">${stars(r.stars)}</span>` : '';
+    const lenHTML = r.length ? `<span class="badge badge-length">${r.length}</span>` : '';
+    const faHTML = r.fa ? `<span class="badge badge-fa">${r.fa}</span>` : '';
+
+    return `<div class="route-card">
+      <div class="route-header" onclick="toggleRoute(${i})">
+        <div class="route-header-info">
+          <div class="route-name">${r.name}</div>
+          <div class="route-badges">
+            <span class="badge badge-grade ${gc}">${r.grade}</span>
+            ${lenHTML}${starsHTML}
+          </div>
+        </div>
+        <span class="route-toggle" id="toggle-${i}">▼</span>
+      </div>
+      <div class="route-body" id="body-${i}">
+        ${r.note ? `<div class="info-row"><span class="info-icon">💬</span><div><div class="info-label">Nota</div><div class="info-value">${r.note}</div></div></div>` : ''}
+        ${faHTML ? `<div class="info-row"><span class="info-icon">🏆</span><div><div class="info-label">Primera ascensión</div><div class="info-value">${r.fa}</div></div></div>` : ''}
+        ${r.pitches && r.pitches.length > 0 ? `<div class="pitches-title">Largos</div>${pitchRows}` : ''}
+        ${r.equipment ? `<div class="info-section"><div class="info-row"><span class="info-icon">🧰</span><div><div class="info-label">Material</div><div class="info-value">${r.equipment}</div></div></div></div>` : ''}
+        ${r.descent ? `<div class="info-section"><div class="info-row"><span class="info-icon">⬇️</span><div><div class="info-label">Descenso</div><div class="info-value">${r.descent}</div></div></div></div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="detail-hero">
+    <div class="detail-name">${a.name}</div>
+    <div class="detail-desc">${a.desc}</div>
+    <div class="detail-chips">
+      <span class="detail-chip">⏱ ${a.approach}</span>
+      <span class="detail-chip">${a.routes.length} vía${a.routes.length !== 1 ? 's' : ''}</span>
+    </div>
+  </div>
+  <div class="section-label">Vías</div>
+  ${routeCards}`;
+}
+
+// ---- NAVIGATION ----
+let currentPage = 'home';
+let currentAguja = null;
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (page === 'home' || page === 'aguja') {
+    document.getElementById('nav-home').classList.add('active');
+  } else if (page === 'ubicacion') {
+    document.getElementById('nav-ubicacion').classList.add('active');
+  }
+  const backBtn = document.getElementById('backBtn');
+  const headerTitle = document.getElementById('headerTitle');
+  const headerSub = document.getElementById('headerSub');
+  if (page === 'home') {
+    backBtn.classList.remove('visible');
+    headerTitle.textContent = 'Escalada en Sosneado';
+    headerSub.textContent = 'Valle de Sosneado · Mendoza';
+  } else if (page === 'ubicacion') {
+    backBtn.classList.add('visible');
+    headerTitle.textContent = 'Ubicación y Acceso';
+    headerSub.textContent = 'Cómo llegar al valle';
+  } else if (page === 'aguja' && currentAguja) {
+    backBtn.classList.add('visible');
+    headerTitle.textContent = currentAguja.name;
+    headerSub.textContent = `${currentAguja.routes.length} vía${currentAguja.routes.length !== 1 ? 's' : ''} · ${currentAguja.approach}`;
+  }
+  currentPage = page;
+  window.scrollTo(0, 0);
+}
+
+function goBack() {
+  showPage('home');
+}
+
+function showAguja(id) {
+  const aguja = AGUJAS.find(a => a.id === id);
+  if (!aguja) return;
+  currentAguja = aguja;
+  document.getElementById('agujaDetail').innerHTML = renderAgujaDetail(aguja);
+  showPage('aguja');
+}
+
+function toggleRoute(i) {
+  const body = document.getElementById('body-' + i);
+  const toggle = document.getElementById('toggle-' + i);
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+// ---- SEARCH ----
+function filterAgujas(q) {
+  const query = q.toLowerCase().trim();
+  const container = document.getElementById('agujasList');
+  if (!query) {
+    container.innerHTML = AGUJAS.map(renderAgujaCard).join('');
+    return;
+  }
+  const filtered = AGUJAS.filter(a => {
+    if (a.name.toLowerCase().includes(query)) return true;
+    if (a.desc.toLowerCase().includes(query)) return true;
+    if (a.routes.some(r => r.name.toLowerCase().includes(query))) return true;
+    if (a.grades.some(g => g.toLowerCase().includes(query))) return true;
+    return false;
+  });
+  container.innerHTML = filtered.length > 0
+    ? filtered.map(renderAgujaCard).join('')
+    : '<div style="padding:24px;text-align:center;color:var(--text2)">Sin resultados</div>';
+}
+
+// ---- INIT ----
+document.getElementById('agujasList').innerHTML = AGUJAS.map(renderAgujaCard).join('');
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
