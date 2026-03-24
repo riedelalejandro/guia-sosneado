@@ -297,6 +297,12 @@
   /* Stars display */
   .stars { color: var(--accent2); font-size: 0.8rem; }
 
+  /* Sector image */
+  .detail-hero-img {
+    width: 100%; height: 220px; object-fit: cover; display: block;
+    border-bottom: 1px solid var(--border);
+  }
+
   /* Offline indicator */
   .offline-badge {
     background: #2a4a2a; color: #7aba7a; font-size: 0.65rem; padding: 2px 8px;
@@ -471,7 +477,8 @@ const AGUJAS = [
   {
     id: 'principal',
     name: 'Aguja Principal',
-    desc: 'Cara Este. Primera vía de escalada del valle (2006). Las vías más largas y emblemáticas de Sosneado.',
+    img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgDMYyDOwXT60LJx09YGZMTN1M95RVmLxZHOLrc6_MNm_zB18q3kkGd5NLZ_upWclkN_L7SFZ27dCLSYM6DbBDQtNzw0qOUUKXEwZkOC2aQAGrvy-Jq_Eh3GF_HGPolUWMzh846-uqHj378/s1600/principal.jpg',
+    desc: 'Cara Este. Primera vía de escalada del valle (2006). Las vías más largas y emblemáticas de Sosneado. Granito de alta calidad con sistemas de fisuras y diedros bien definidos.',
     approach: '~1h 30min',
     grades: ['6a+', '6b+', '6c', '7b+'],
     maxGrade: '7b+',
@@ -887,7 +894,8 @@ const AGUJAS = [
   {
     id: 'jinete',
     name: 'Aguja El Jinete',
-    desc: 'Aguja con 3 vías establecidas.',
+    img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgYLkEgkoNGPL0zWUfIEtUD72P0u6IHfT9LmVk5ru4Bmrl22oFh_zI1LQIahorv2qPK07VhMfv8d1Cp4l5m7szdxijnei-gplw6-RGYlU8ubYBDWqEsdorB3KmwrfqslD97BWD_zWWoDPcB/s1600/jinete+via+sg.jpg',
+    desc: 'Pequeña pero interesante aguja al comienzo del acarreo central del cerro de los Pantanos. La más cercana al campamento. Ideal para un día corto de escalada.',
     approach: '~1h',
     grades: ['6a+', '6b', '6b+'],
     maxGrade: '6b+',
@@ -928,7 +936,8 @@ const AGUJAS = [
   {
     id: 'prenada',
     name: 'Aguja Preñada',
-    desc: 'Formación poco conocida. Visible desde el talud de aproximación cerca de la Aguja Oreja.',
+    img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi_kxMhYUi3n26RHGsMvaxDnvFbOf4zEtr56vWAuV19fc4tiIpy3ewbv9NMFK365CXOrm3nf1hu-qIbArkuD2_mWvibMtRW9ldp_hPSFcuWzRz0tVlZOwXtt9BX4m1Xkj5opgdXmR-P77IW/s1600/SAM_2903.JPG',
+    desc: 'Formación poco evidente desde el inicio del acarreo. Su nombre proviene de su base redondeada. El diedro central es el crux y uno de los largos más técnicos del valle.',
     approach: '+2h desde campamento río',
     grades: ['6c/+'],
     maxGrade: '6c+',
@@ -950,7 +959,8 @@ const AGUJAS = [
   {
     id: 'pilar-rojo',
     name: 'Aguja Pilar Rojo',
-    desc: 'Pilar de 200m en cara sur, entre la Aguja Principal y Ectelion. Granito rojo muy vertical.',
+    img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjBQN2eh2CKvgz4sZjClvoMk1CDJbMCHV-2ZQbq8162pNTTXWVhS1IXMb3MPtD4He8LbWzFrvpiMSyCMUViOkXoC2IAgyz6shglGRlygjTuykcBIEpzRaQ49qSSzfs2uzrE-mOSFyFgv7Ys/s1600/SAM_2882.JPG',
+    desc: 'Pilar de 200m que se desprende del paredón sur entre la Aguja Principal y Ectelion. Granito rojo de excelente calidad, muy aéreo y vertical con excelentes protecciones.',
     approach: '~1h 30min',
     grades: ['6b+', '6c', '7b'],
     maxGrade: '7b?',
@@ -998,7 +1008,8 @@ const AGUJAS = [
   {
     id: 'adidas',
     name: 'Aguja Adidas',
-    desc: 'Aguja con vías de altísima dificultad, incluyendo "El Nazo (The Nose)" de 7b+.',
+    img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEixQuMgi28IwxfU1S8GRjmXOH4LE5IL2XFgJQgX3uCKzfyiC2itSN0GZgMvVDPzq0tDCsgW9UkWewXrboblFOY9V7GbTgwPSfXA0poT-Ow_Bo6S4ArtIleTpBwdXEow5pbqbTgD7RYCiT8e/s1600/adidas+vias.jpg',
+    desc: 'Una de las formaciones más estéticas y emblemáticas del valle. Tres fisuras bien marcadas y cima aguda. Escalada muy atlética y continua en roca de excelente calidad.',
     approach: '~2h',
     grades: ['6a', '6c+', '7a', '7b+'],
     maxGrade: '7b+',
@@ -1300,7 +1311,8 @@ const AGUJAS = [
   {
     id: 's2',
     name: 'Aguja S2',
-    desc: 'Placa vertical homogénea detrás del Bolillo. Cima triangular.',
+    img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgorW-SreLuzfKhmbhfFfM8nKRwn-4AB4V0xLPSzLC3LYRE-fp4-9hC0I9no3gVy4uMOWMV_Xe6XU5vcLw4xyXyRR2h3t2nJRl79Gs_M4n01tra5mmtqUQ69pbABrAcBCJgESpwTP1U8Yyb/s1600/Mendoza+17.jpg',
+    desc: 'Placa vertical homogénea detrás del Bolillo. Cima triangular pequeña. Pocos sistemas de fisura, escalada técnica en placa de granito compacto.',
     approach: '~1h–1h 30min',
     grades: ['6a', '6b+'],
     maxGrade: '6b+',
@@ -1355,7 +1367,8 @@ const AGUJAS = [
   {
     id: 'condor',
     name: 'Aguja El Cóndor',
-    desc: 'Bloque con punta que recuerda a la cabeza de un cóndor. Grandes losas.',
+    img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg7Gy5kLHDNdfAhStCnnHCFwQEYCxXDgrukWfLniYk8r7k61cVY1N4jF1tOFyY6rQipik2JKQU04Z3NbjSAse8wt2Po-QBFwtVtDo3qM1L2yXY5le5cyJakvIZDZtt2A7fx5F_5gPYON878/s1600/P1140695.JPG',
+    desc: 'Bloque con punta que recuerda la cabeza de un cóndor. Grandes losas basales que semejan alas. Escalada en placa con secciones de fisuras bien protegidas.',
     approach: '~1h 30min',
     grades: ['6b', '6b+', '6c'],
     maxGrade: '6c',
@@ -1398,7 +1411,8 @@ const AGUJAS = [
   {
     id: 'lanzamiento',
     name: 'Aguja Base de Lanzamiento',
-    desc: 'Aguja compacta con 2 vías.',
+    img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEigUtzg0mQhzwo65GYwvYTj-kIUmYKPNr6PrGEmB6WfDqy9bYwfR_MTwGvrYlR4HDHWskujH0kU6tH29jejkwv3S6TJUIriOYsp_AjZR5i_aYm0S7PWyPwQiTFo9D3G7-WCNOaLa7RYeuYn/s1600/Base+de+Lanzamiento+.JPG',
+    desc: 'Aguja compacta directamente bajo el Misil, identificable por su cima pequeña y plana. Acceso por el plateau de bloques y el circo superior.',
     approach: '~1h 30min',
     grades: ['6b+', '6c'],
     maxGrade: '6c',
@@ -1626,7 +1640,8 @@ function renderAgujaDetail(a) {
     </div>`;
   }).join('');
 
-  return `<div class="detail-hero">
+  return `${a.img ? `<img class="detail-hero-img" src="${a.img}" alt="${a.name}" loading="lazy">` : ''}
+<div class="detail-hero">
     <div class="detail-name">${a.name}</div>
     <div class="detail-desc">${a.desc}</div>
     <div class="detail-chips">
